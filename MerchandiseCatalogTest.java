@@ -55,6 +55,23 @@ public class MerchandiseCatalogTest {
 
                 // Currency Validation
                 .body("categories[0].price.currency.currencyCode", equalTo("GBP"))
+
+                // Price Validation - RRP
+                .body("categories[0].price.rrp", notNullValue())
+                .body("categories[0].price.rrp", greaterThan(0f))
+
+                // Price Validation - Net Price
+                .body("categories[0].price.stock.netPrice.value", notNullValue())
+                .body("categories[0].price.stock.netPrice.value", greaterThan(0f))
+
+                // Price Validation - Tax
+                .body("categories[0].price.stock.tax.value", notNullValue())
+                .body("categories[0].price.stock.tax.value", greaterThanOrEqualTo(0f))
+
+                // Price Validation - Total Price
+                .body("categories[0].price.stock.totalPrice.value", notNullValue())
+                .body("categories[0].price.stock.totalPrice.value", greaterThan(0f))
+
                 .extract()
                 .response();
 
@@ -83,6 +100,12 @@ public class MerchandiseCatalogTest {
         System.out.println("Tax: " + tax);
         System.out.println("Total Price: " + totalPrice);
 
-
+        // Additional Validations
+        Assert.assertEquals(currency, "GBP", "Currency should be GBP");
+        Assert.assertTrue(rrp > 0, "RRP should be greater than 0");
+        Assert.assertTrue(netPrice > 0, "Net Price should be greater than 0");
+        Assert.assertTrue(tax >= 0, "Tax should be greater than or equal to 0");
+        Assert.assertTrue(totalPrice > 0, "Total Price should be greater than 0");
+        Assert.assertTrue(totalPrice >= (netPrice + tax), "Total Price should be >= Net Price + Tax");
     }
 }
